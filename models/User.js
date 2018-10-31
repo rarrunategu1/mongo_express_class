@@ -5,14 +5,12 @@ const Schema = mongoose.Schema; //brings in the schema class
 const UserSchema = new Schema ({
     name: {
         type: String, 
-        require: true,
-    },
-    age: {
-        type: Number,
+        required: true,
+        unique: true
     },
     password: {
         type: String, 
-        require: true, 
+        required: true, 
     },
     avatar: {
         type: String,

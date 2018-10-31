@@ -14,9 +14,9 @@ router.get('/', (req, res)=> {
 //url /api/users/cliff?comment=id
 router.get("/:name", (req, res) => {
   const name = req.params.name;
-  User.find({ name: name })
+  User.findOne({ name })
   .then(user => {
-    if ( user === []) {
+    if ( !user) {
        return res.status(404).json({message: `User: ${name} not found`})
       }else{
       res.json(user)
@@ -36,7 +36,32 @@ router.post("/", (req, res) => {
   
   //newUser.avatar = avatar //add other attributes after creating that new item
   
-  newUser.save().then
+  newUser.save()
+  .then(user => res.status(201).json(user))
+  .catch(err => res.status(500).json({message: err}));
+})
+
+router.delete('/:name', (req, res)=> {
+  //TODO: protected route -ensure user is one deleting
+  const name = req.params.name;
+  User.findOne({ name })
+  .then(user => {
+    if ( !user) {
+       return res.status(404).json({message: `User: ${name} not found`})
+      }
+      user.remove()
+        .then( ()=> res.status(204).json({message: "User successfully deleted"}))
+        .catch(err => res.status(500).json(err));
+  })
+  .catch(err => res.status(500).json({message: err})); //500 means something happened on server
+})
+
+router.put('/:name', (req, res) =>{
+  
+  // findOne()
+  // .then(user) => {
+  //   findOneand Update()
+  // })
 })
 
 module.exports = router;
