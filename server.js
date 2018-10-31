@@ -9,8 +9,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 const users = require('./routes/api/users');
+const profiles = require('./routes/api/profiles')
 
 app.use('/api/users', users); //to use router path
+app.use('/api/profiles', profiles);
 
 mongoose
     .connect(db, { useNewUrlParser: true })
