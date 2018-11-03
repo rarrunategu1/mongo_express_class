@@ -18,8 +18,7 @@ route.get('/:email', (req, res) =>{
     Profile.findOne({email})
     .then(profile => {
         if (!profile){
-            res.status(404)
-            .json({message: `The profile for email address ${email} does not exist`});
+            res.status(404).json({message: `The profile for email address ${email} does not exist`});
         } else {
             res.json(profile);
         }
@@ -61,19 +60,22 @@ route.delete('/:email', (req,res) => {
 
 
 //updates a profile found by name
-route.put('/:name', (req, res) =>{
-    Profile.findOneAndUpdate({firstname: req.params.name},
-    {$set: {email: req.body.email}}, {new: true})
+route.put('/:email', (req, res) =>{
+    const email = req.params.email; //not good practice to use email as a param
+    Profile.findOne({email})
     .then(profile => {
-      if (!profile) {
-        res.status(404).json(`There is no profile found for ${req.params.name} to update`)
-    }else{
-      res.json(profile)
-  }
-  })
-  .catch(err => res.status(500).json({message: err}));
+        if (!profile){
+            res.status(404).json({message: `The profile for email address ${email} does not exist`});
+        } else {
+       Profile.findOneAndUpdate({email},
+    {$set: {firstname: req.body.firstname}}, {new: true})
+    
+        .then(profile => res.json(profile))
+      }
 })
+    .catch(err => res.status(500).json(err));
 
+    })
 
 
 module.exports = route;
