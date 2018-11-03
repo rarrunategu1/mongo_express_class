@@ -6,7 +6,6 @@ route.use(bodyParser.json());
 route.use(bodyParser.urlencoded({extended: true}))
 
 //reads all profiles
-
 route.get('/', (req, res)=> {
   Profile.find()
         .then(profiles => res.json(profiles))
@@ -14,7 +13,6 @@ route.get('/', (req, res)=> {
 });
 
 //reads one particular profile
-
 route.get('/:email', (req, res) =>{
     const email = req.params.email; //not good practice to use email as a param
     Profile.findOne({email})
@@ -27,8 +25,9 @@ route.get('/:email', (req, res) =>{
         }
     })
     .catch(err => res.status(500).json({message: err}));
-    
-    
+})  
+
+//creates a new profile    
 route.post('/', (req, res) => {
     
     const { firstname, lastname, email } = req.body;
@@ -44,6 +43,7 @@ route.post('/', (req, res) => {
         .catch(err =>res.status(500).json({message: err}));
 });
 
+//deletes a profile found by email
 route.delete('/:email', (req,res) => {
     
     const email = req.params.email;
@@ -58,11 +58,21 @@ route.delete('/:email', (req,res) => {
   })
   .catch(err => res.status(500).json({message: err})); //500 means something happened on server
 })
-    
-});
 
 
-
+//updates a profile found by name
+route.put('/:name', (req, res) =>{
+    Profile.findOneAndUpdate({firstname: req.params.name},
+    {$set: {email: req.body.email}}, {new: true})
+    .then(profile => {
+      if (!profile) {
+        res.status(404).json(`There is no profile found for ${req.params.name} to update`)
+    }else{
+      res.json(profile)
+  }
+  })
+  .catch(err => res.status(500).json({message: err}));
+})
 
 
 

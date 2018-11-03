@@ -57,11 +57,18 @@ router.delete('/:name', (req, res)=> {
 })
 
 router.put('/:name', (req, res) =>{
+    User.findOneAndUpdate({name: req.params.name},
+    {$set: {password: req.body.password}}, {new: true})
+    .then(user => {
+      if (!user) {
+        res.status(404).json(`User ${req.params.name} not found to update`)
+    }else{
+      res.json(user)
+  }
+  })
+  .catch(err => res.status(500).json({message: err}));
+});
   
-  // findOne()
-  // .then(user) => {
-  //   findOneand Update()
-  // })
-})
+
 
 module.exports = router;
