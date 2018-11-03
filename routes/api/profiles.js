@@ -1,10 +1,13 @@
 const express = require('express');
 const Profile = require('../../models/Profile');
-const router = express.Router();
+const route = express.Router();
+var bodyParser = require('body-parser');
+route.use(bodyParser.json());
+route.use(bodyParser.urlencoded({extended: true}))
 
 //reads all profiles
 
-router.get('/', (req, res)=> {
+route.get('/', (req, res)=> {
   Profile.find()
         .then(profiles => res.json(profiles))
         .catch(err => console.log(err));
@@ -12,7 +15,7 @@ router.get('/', (req, res)=> {
 
 //reads one particular profile
 
-router.get('/:email', (req, res) =>{
+route.get('/:email', (req, res) =>{
     const email = req.params.email; //not good practice to use email as a param
     Profile.findOne({email})
     .then(profile => {
@@ -26,7 +29,7 @@ router.get('/:email', (req, res) =>{
     .catch(err => res.status(500).json({message: err}));
     
     
-router.post("/", (req, res) => {
+route.post('/', (req, res) => {
     
     const { firstname, lastname, email } = req.body;
     
@@ -34,12 +37,33 @@ router.post("/", (req, res) => {
         firstname,
         lastname,
         email
-    })
+    });
 
     newProfile.save()
         .then(profile =>res.status(202).json(profile))
-        .catch(err =>res.status(500).json({message: err}))
-})    
+        .catch(err =>res.status(500).json({message: err}));
 });
 
-module.exports = router;
+route.delete('/:email', (req,res) => {
+    
+    const email = req.params.email;
+  Profile.findOne({ email })
+  .then(profile => {
+    if ( !profile) {
+       return res.status(404).json({message: `A profile with email ${profile} cannot be found`})
+      }
+      profile.remove()
+        .then( ()=> res.status(204).json({message: "Profile successfully deleted"}))
+        .catch(err => res.status(500).json(err));
+  })
+  .catch(err => res.status(500).json({message: err})); //500 means something happened on server
+})
+    
+});
+
+
+
+
+
+
+module.exports = route;
